@@ -12,13 +12,29 @@ dftx <- tibble(state = rep("Texas", 64),
                date = seq(mdy('01/01/2013'), mdy('04/01/2018'), by='1 month'),
                productionm, lapsecanm, growthm)
 
+set.seed(2)
+productionm <- rnorm(64)
+lapsecanm <- rnorm(64)
+growthm <- productionm - lapsecanm
+dfca <- tibble(state = rep("California", 64),
+               date = seq(mdy('01/01/2013'), mdy('04/01/2018'), by='1 month'),
+               productionm, lapsecanm, growthm)
+
+set.seed(3)
+productionm <- rnorm(64)
+lapsecanm <- rnorm(64)
+growthm <- productionm - lapsecanm
+dffl <- tibble(state = rep("Florida", 64),
+               date = seq(mdy('01/01/2013'), mdy('04/01/2018'), by='1 month'),
+               productionm, lapsecanm, growthm)
+
+df <- rbind(dftx, dfca, dffl)
+
 lapsecanytd <- cumsum(lapsecanm)
 productionytd <- cumsum(productionm)
 growthm <- productionm - lapsecanm
 growthytd <- cumsum(growthm)
 
-dftx <- dftx %>%
-  mutate(year = seq())
 
 set.seed(2)
 lapsecanm <- rnorm(100)
