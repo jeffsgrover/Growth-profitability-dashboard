@@ -50,27 +50,30 @@ df %>% group_by(year(date), state) %>%
   ungroup() %>%
   filter(date %in% c(ymd("2013-01-01"), ymd("2013-02-01")))
 
-m_ytd_graphs <- function(data) {
-  lapsecanchartm <- ggplot(data = df, aes(x=time)) + 
+m_ytd_graphs <- function(data, statearg) {
+  data <- data %>% filter(state==statearg)
+  
+  lapsecanchartm <- ggplot(data, aes(x=date)) + 
     geom_line(aes(y=lapsecanm)) +
     theme_few()
-  lapsecanchartytd <- ggplot(data = df, aes(x=time)) + 
+  lapsecanchartytd <- ggplot(data, aes(x=date)) + 
     geom_line(aes(y=lapsecanytd)) +
     theme_few()
-  productionchartm <- ggplot(data = df, aes(x=time)) +
+  productionchartm <- ggplot(data = df, aes(x=date)) +
     geom_line(aes(y=productionm)) +
     theme_few()
-  productionchartytd <- ggplot(data = df, aes(x=time)) +
+  productionchartytd <- ggplot(data = df, aes(x=date)) +
     geom_line(aes(y=productionytd)) +
     theme_few()
-  growthchartm <- ggplot(data = df, aes(x=time)) +
+  growthchartm <- ggplot(data = df, aes(x=date)) +
     geom_line(aes(y=growthm)) +
     theme_few()
-  growthchartytd <- ggplot(data = df, aes(x=time)) +
+  growthchartytd <- ggplot(data = df, aes(x=date)) +
     geom_line(aes(y=growthytd)) +
     theme_few()
   charts <- ggarrange(productionchartm, productionchartytd,
                       lapsecanchartm, lapsecanchartytd,
                       growthchartm, growthchartytd,
                       nrow=3, ncol=2)
+  return(charts)
 }
