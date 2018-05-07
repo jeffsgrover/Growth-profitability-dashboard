@@ -30,57 +30,25 @@ dffl <- tibble(state = rep("Florida", 64),
 
 df <- rbind(dftx, dfca, dffl)
 
-lapsecanytd <- cumsum(lapsecanm)
-productionytd <- cumsum(productionm)
-growthm <- productionm - lapsecanm
-growthytd <- cumsum(growthm)
-
-
-set.seed(2)
-lapsecanm <- rnorm(100)
-lapsecanytd <- cumsum(lapsecanm)
-productionm <- rnorm(100)
-productionytd <- cumsum(productionm)
-growthm <- productionm - lapsecanm
-growthytd <- cumsum(growthm)
-dffl <- tibble(state = rep("Florida", 100),
-             time = seq(1:100), 
-             lapsecanm, lapsecanytd,
-             productionm, productionytd,
-             growthm, growthytd)
-
-set.seed(30)
-lapsecanm <- rnorm(100)
-lapsecanytd <- cumsum(lapsecanm)
-productionm <- rnorm(100)
-productionytd <- cumsum(productionm)
-growthm <- productionm - lapsecanm
-growthytd <- cumsum(growthm)
-dfca <- tibble(state = rep("California", 100),
-             time = seq(1:100), 
-             lapsecanm, lapsecanytd,
-             productionm, productionytd,
-             growthm, growthytd)
-
-df <- rbind(dftx, dffl, dfca)
-
+# Create companywide
 df <- df %>% 
-  group_by(time) %>%
+  group_by(date) %>%
   summarize(lapsecanm = sum(lapsecanm),
-            lapsecanytd = sum(lapsecanytd),
             productionm = sum(productionm),
-            productionytd = sum(productionytd),
-            growthm = sum(growthm),
-            growthytd = sum(growthytd)) %>%
-  mutate(state = rep("Countrywide", 100)) %>%
+            growthm = sum(growthm)) %>%
+  mutate(state = rep("Countrywide", 64)) %>%
   bind_rows(., df) %>%
-  select(state, time, 
-         productionm, productionytd, 
-         lapsecanm, lapsecanytd,
-         growthm, growthytd) %>%
+  select(state, date, 
+         productionm, lapsecanm, growthm) %>%
   ungroup()
 
-df %>% filter(time %in% c(1,2))
+# Create YTD variables
+df %>% group_by(year(date), state) %>%
+  mutate(productionytd = cumsum(productionm),
+         lapsecanytd = cumsum(lapsecanm),
+         growthytd = cumsum(growthm)) %>%
+  ungroup() %>%
+  filter(date %in% c(ymd("2013-01-01"), ymd("2013-02-01")))
 
 m_ytd_graphs <- function(data) {
   lapsecanchartm <- ggplot(data = df, aes(x=time)) + 
